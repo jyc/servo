@@ -1,0 +1,89 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Bug 1273706 - Syntax (CSS Properties &amp; Values)</title>
+<link rel="help" href="https://drafts.css-houdini.org/css-properties-values-api/#supported-syntax-strings" />
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=common.js></script>
+<script>
+let invalidSyntaxTests = [
+  { syntax: "<number>+ <color>" },
+  { syntax: "<i-don't-exist>+" },
+  { syntax: "" },
+  { syntax: "<number> || <color>" },
+  { syntax: "|"},
+  { syntax: "+", initialValue: "calc(5 + 7)" },
+  { syntax: "   ", initialValue: "calc(5 + 7)" },
+  { syntax: "initial" },
+  { syntax: "inherit" },
+  { syntax: "unset" },
+  // We don't support revert yet.
+  //{ syntax: "revert" },
+  { syntax: "* worn out places" },
+  { syntax: "* | worn | out | faces" },
+  { syntax: "*+" },
+];
+
+let validSyntaxTests = [
+  { syntax: "*" },
+  { syntax: "<color>" },
+  { syntax: " <color> " },
+  { syntax: "<color>  +" },
+
+  // Allow some CSS keywords, just not the CSS-wide keywords or revert.
+  { syntax: "center" },
+];
+
+let syntaxFailTests = [
+  { syntax: "<color>", initialValue: "5px" },
+  { syntax: "<transform-function>", initialValue: "red" },
+  { syntax: "<transform-function>+", initialValue: " " },
+  { syntax: "<resolution>", initialValue: "calc(0)" },
+  { syntax: "<custom-ident>", initialValue: "5px" },
+  { syntax: "to-me", initialValue: "who-are-you" },
+  { syntax: "<number>+", initialValue: "1 2 initial 3" },
+  { syntax: "*", initialValue: "initial" },
+  // https://drafts.csswg.org/css-variables/#syntax
+  // "While <declaration-value> must represent at least one token, that one
+  //  token may be whitespace. This implies that --foo: ; is valid, and the
+  //  corresponding var(--foo) call would have a single space as its
+  //  substitution value, but --foo:; is invalid."
+  { syntax: "*", initialValue: "" },
+];
+
+let syntaxPassTests = [
+  { syntax: "*", initialValue: "all around me are familiar faces" },
+  { syntax: "*", initialValue: "translateX(5px) 5em 73" },
+  { syntax: "<number>", initialValue: "5" },
+  { syntax: "<number> | <color>", initialValue: "red" },
+  { syntax: "<number>+", initialValue: "4 8 15 16 23 42" },
+  { syntax: "<number>+ | <url>", initialValue: "url(http://mozilla.org)" },
+  { syntax: "<transform-function>", initialValue: "translateX(5px)" },
+  { syntax: "<resolution>", initialValue: "5dpi" },
+  { syntax: "<custom-ident>", initialValue: "doesnt-really-matter" },
+  { syntax: "to-me", initialValue: "to-me" },
+  { syntax: "to-me | just-a-poor-boy", initialValue: "just-a-poor-boy" },
+  // https://drafts.csswg.org/css-variables/#syntax
+  // "While <declaration-value> must represent at least one token, that one
+  //  token may be whitespace. This implies that --foo: ; is valid, and the
+  //  corresponding var(--foo) call would have a single space as its
+  //  substitution value, but --foo:; is invalid."
+  { syntax: "*", initialValue: " " },
+];
+
+// Testing functions.
+
+expectFail("invalid syntax", invalidSyntaxTests, "SyntaxError",
+  "Invalid syntaxes must trigger a SyntaxError.");
+
+expectSucceed("valid syntax", validSyntaxTests,
+  "Valid syntaxes must not trigger a SyntaxError.");
+
+expectFail("syntax fail", syntaxFailTests, "SyntaxError",
+  "Initial values that are syntactically invalid must trigger a " +
+  "SyntaxError.");
+
+expectSucceed("syntax pass", syntaxPassTests,
+  "Initial values that are syntactically valid must not trigger a " +
+  "SyntaxError.");
+</script>

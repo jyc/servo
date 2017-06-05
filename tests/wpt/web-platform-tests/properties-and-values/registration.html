@@ -1,0 +1,78 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Bug 1273706 - Registration (CSS Properties &amp; Values)</title>
+<link rel="help" href="https://drafts.css-houdini.org/css-properties-values-api/#the-registerproperty-function" />
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div id="sandbox"></div>
+<script>
+let sandbox = document.getElementById("sandbox");
+
+test(function () {
+  let caughtDuplicate = false;
+  CSS.registerProperty({ name: "--duplicate-ime" });
+  try {
+    CSS.registerProperty({ name: "--duplicate-ime" });
+    CSS.unregisterProperty("--duplicate-ime");
+  } catch (e) {
+    caughtDuplicate =
+      e instanceof DOMException &&
+      e.name == "InvalidModificationError";
+  }
+  assert_true(caughtDuplicate, "caught exception");
+}, "Attempting to register a property with a name that has already been " +
+   "registered should result in an InvalidModificationError.");
+
+test(function () {
+  let caughtNotFound = false;
+  try {
+    CSS.unregisterProperty("--not-found-nfe");
+  } catch (e) {
+    caughtNotFound =
+      e instanceof DOMException &&
+      e.name == "NotFoundError";
+  }
+  assert_true(caughtNotFound, "caught exception");
+}, "Attempting to unregister a property that doesn't exist should result in " +
+   "a NotFoundError.");
+
+test(function() {
+  CSS.registerProperty({ name: "--some-property", syntax: "*" });
+  sandbox.style.setProperty("--some-property", "hello world");
+  assert_equals(window.getComputedStyle(sandbox)
+                      .getPropertyValue("--some-property"),
+                "hello world",
+                "'hello world' should be a valid * value.");
+  CSS.unregisterProperty("--some-property");
+  CSS.registerProperty({ name: "--some-property", syntax: "<number>" });
+  try {
+    assert_equals(window.getComputedStyle(sandbox)
+      .getPropertyValue("--some-property"),
+      "",
+      "'hello world' should not be a valid <number> value.");
+  } finally {
+    CSS.unregisterProperty("--some-property");
+  }
+}, "If all declarations for a custom property becomes invalid after " +
+   "registrations change, we should no longer use any of them.");
+
+test(function() {
+  sandbox.setAttribute("style", "--some-property: 12345; --some-property:hello world");
+  assert_equals(window.getComputedStyle(sandbox)
+                      .getPropertyValue("--some-property"),
+                "hello world",
+                "We should use the last declaration, because " +
+                "--some-property has no type.");
+  CSS.registerProperty({ name: "--some-property", syntax: "<number>" });
+  try {
+    assert_equals(window.getComputedStyle(sandbox)
+                        .getPropertyValue("--some-property"),
+                  "12345",
+                  "We should update to no longer use the last declaration " +
+                  "after --some-property becomes typed.");
+  } finally {
+    CSS.unregisterProperty("--some-property");
+  }
+}, "We should update to use an earlier declaration if subsequent " +
+   "declarations become invalid when we change variable registrations.");
+</script>
