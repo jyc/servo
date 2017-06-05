@@ -4,7 +4,7 @@
 
 use cssparser::{Parser, ParserInput, serialize_identifier};
 use dom::bindings::codegen::Bindings::WindowBinding::WindowBinding::WindowMethods;
-use dom::bindings::error::Fallible;
+use dom::bindings::error::{Error, Fallible};
 use dom::bindings::reflector::Reflector;
 use dom::bindings::str::DOMString;
 use dom::window::Window;
@@ -52,5 +52,17 @@ impl CSS {
         } else {
             false
         }
+    }
+
+    // https://drafts.css-houdini.org/css-properties-values-api/#dom-css-registerproperty
+    pub fn RegisterProperty(_: &Window, options: &PropertyDescriptorDict) -> Result<(), Error> {
+        // Implemented by a later patch in this series.
+        Err(Error::NotSupported)
+    }
+
+    // https://drafts.css-houdini.org/css-properties-values-api/#dom-css-unregisterproperty
+    pub fn UnregisterProperty(_: &Window, name: DOMString) -> Result<(), Error> {
+        // Implemented by a later patch in this series.
+        Err(Error::NotSupported)
     }
 }
