@@ -421,6 +421,7 @@ impl PropertyDeclarationIdSet {
                     //
                     // FIXME(pcwalton): Cloning the error reporter is slow! But so are custom
                     // properties, so whatever...
+                    // NOTE(jyc) would be cool to fix this
                     let context = ParserContext::new(Origin::Author,
                                                      url_data,
                                                      error_reporter,
@@ -2598,6 +2599,7 @@ pub fn apply_declarations<'a, F, I>(device: &Device,
         }
     }
 
+    // NOTE(jyc) This looks a lot like CSSVariableResolver.
     let custom_properties =
         ::custom_properties::finish_cascade(
             custom_properties, &inherited_custom_properties);

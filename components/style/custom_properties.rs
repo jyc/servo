@@ -388,6 +388,7 @@ pub fn cascade<'a>(custom_properties: &mut Option<HashMap<&'a Name, BorrowedSpec
 /// to remove any potential cycles, and wrap it in an arc.
 ///
 /// Otherwise, just use the inherited custom properties map.
+/// TODO(jyc) Use the inherited one? Could we share it somehow?
 pub fn finish_cascade(specified_values_map: Option<HashMap<&Name, BorrowedSpecifiedValue>>,
                       inherited: &Option<Arc<HashMap<Name, ComputedValue>>>)
                       -> Option<Arc<HashMap<Name, ComputedValue>>> {
@@ -503,6 +504,7 @@ fn substitute_one(name: &Name,
             partial_computed_value
         } else {
             // Invalid at computed-value time. Use the inherited value.
+            // TODO(jyc) Might not do this with custom properties: could use initial value.
             if let Some(inherited_value) = inherited.as_ref().and_then(|i| i.get(name)) {
                 inherited_value.clone()
             } else {
