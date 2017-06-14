@@ -388,7 +388,6 @@ pub fn cascade<'a>(custom_properties: &mut Option<HashMap<&'a Name, BorrowedSpec
 /// to remove any potential cycles, and wrap it in an arc.
 ///
 /// Otherwise, just use the inherited custom properties map.
-/// TODO(jyc) Use the inherited one? Could we share it somehow?
 pub fn finish_cascade(specified_values_map: Option<HashMap<&Name, BorrowedSpecifiedValue>>,
                       inherited: &Option<Arc<HashMap<Name, ComputedValue>>>)
                       -> Option<Arc<HashMap<Name, ComputedValue>>> {

@@ -95,6 +95,7 @@ use style::context::QuirksMode;
 use style::element_state::*;
 use style::media_queries::MediaList;
 use style::properties::PropertyDeclarationBlock;
+use style::properties_and_values::RegisteredPropertySet as CssRegisteredPropertySet;
 use style::selector_parser::{PseudoElement, Snapshot};
 use style::shared_lock::{SharedRwLock as StyleSharedRwLock, Locked as StyleLocked};
 use style::stylearc::Arc as StyleArc;
@@ -390,6 +391,7 @@ unsafe_no_jsmanaged_fields!(WebGLTextureId);
 unsafe_no_jsmanaged_fields!(WebGLVertexArrayId);
 unsafe_no_jsmanaged_fields!(MediaList);
 unsafe_no_jsmanaged_fields!(WebVRGamepadHand);
+unsafe_no_jsmanaged_fields!(CssRegisteredPropertySet);
 
 unsafe impl<'a> JSTraceable for &'a str {
     #[inline]

@@ -132,6 +132,7 @@ use std::time::{Duration, Instant};
 use style::attr::AttrValue;
 use style::context::{QuirksMode, ReflowGoal};
 use style::invalidation::element::restyle_hints::{RestyleHint, RESTYLE_SELF, RESTYLE_STYLE_ATTRIBUTE};
+use style::properties_and_values::RegisteredPropertySet as CssRegisteredPropertySet;
 use style::selector_parser::{RestyleDamage, Snapshot};
 use style::shared_lock::SharedRwLock as StyleSharedRwLock;
 use style::str::{HTML_SPACE_CHARACTERS, split_html_space_chars, str_join};
@@ -327,6 +328,8 @@ pub struct Document {
     /// is inserted or removed from the document.
     /// See https://html.spec.whatwg.org/multipage/#form-owner
     form_id_listener_map: DOMRefCell<HashMap<Atom, HashSet<JS<Element>>>>,
+
+    registered_property_set: DOMRefCell<CssRegisteredPropertySet>,
 }
 
 #[derive(JSTraceable, HeapSizeOf)]
@@ -2215,6 +2218,7 @@ impl Document {
             dom_count: Cell::new(1),
             fullscreen_element: MutNullableJS::new(None),
             form_id_listener_map: Default::default(),
+            registered_property_set: Default::default(),
         }
     }
 

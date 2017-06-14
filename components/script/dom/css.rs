@@ -11,6 +11,7 @@ use dom::window::Window;
 use dom_struct::dom_struct;
 use style::context::QuirksMode;
 use style::parser::ParserContext;
+use style::properties_and_values::Syntax;
 use style::stylesheets::CssRuleType;
 use style::stylesheets::supports_rule::{Declaration, parse_condition_or_declaration};
 use style_traits::PARSING_MODE_DEFAULT;
@@ -62,6 +63,7 @@ impl CSS {
 
     // https://drafts.css-houdini.org/css-properties-values-api/#dom-css-unregisterproperty
     pub fn UnregisterProperty(_: &Window, name: DOMString) -> Result<(), Error> {
+        println!("output: {:?}", Syntax::parse(&name));
         // Implemented by a later patch in this series.
         Err(Error::NotSupported)
     }
