@@ -23,6 +23,8 @@
 //! [cssparser]: ../cssparser/index.html
 //! [selectors]: ../selectors/index.html
 
+#![feature(custom_attribute)]
+
 #![deny(warnings)]
 #![deny(missing_docs)]
 

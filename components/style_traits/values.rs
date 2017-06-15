@@ -55,22 +55,79 @@ impl ToCss for String {
     }
 }
 
-/// Marker trait to automatically implement ToCss for Vec<T>.
-pub trait OneOrMoreCommaSeparated {}
+/// aaaj
+pub struct CommaSeparator();
+/// aaa
+pub struct SpaceSeparator();
 
-impl OneOrMoreCommaSeparated for UnicodeRange {}
+/// aaa
+pub trait Separator {
+    /// bbb
+    fn separator() -> &'static str;
+}
 
-impl<T> ToCss for Vec<T> where T: ToCss + OneOrMoreCommaSeparated {
+impl Separator for CommaSeparator {
+    fn separator() -> &'static str {
+        ", "
+    }
+}
+
+impl Separator for SpaceSeparator {
+    fn separator() -> &'static str {
+        " "
+    }
+}
+
+///
+pub trait CommaSeparated {}
+
+impl CommaSeparated for CommaSeparator {}
+
+/// Marker trait on T to automatically implement ToCss for Vec<T> when T's are
+/// separated by some delimiter `delim`.
+pub trait OneOrMoreSeparated {
+    /// zzz
+    type S: Separator;
+}
+
+//macro_rules! one_or_more_comma_separated {
+//    ($name: ty) => {
+//        impl OneOrMoreSeparated for $name {
+//            #[inline]
+//            fn separator() -> &'static str {
+//                return ", ";
+//            }
+//        }
+//    }
+//}
+
+//one_or_more_comma_separated!(UnicodeRange);
+
+impl OneOrMoreSeparated for UnicodeRange { type S = CommaSeparator; }
+
+// Would be nice to unify these implementations--tried, and it seems like we
+// would need mutually exclusive traits for that (to ensure someone didn't
+// claim to implement both OneOrMoreCommaSeparated and
+// OneOrMoreSpaceSeparated).
+
+//macro_rules! impl_to_css_for_separated_type {
+//    ($name: path, $delim: expr) => {
+impl<T> ToCss for Vec<T> where T: ToCss + OneOrMoreSeparated {
     fn to_css<W>(&self, dest: &mut W) -> fmt::Result where W: fmt::Write {
         let mut iter = self.iter();
         iter.next().unwrap().to_css(dest)?;
         for item in iter {
-            dest.write_str(", ")?;
+            dest.write_str(<T as OneOrMoreSeparated>::S::separator())?;
             item.to_css(dest)?;
         }
         Ok(())
     }
 }
+//    }
+//}
+
+//impl_to_css_for_separated_type!(OneOrMoreCommaSeparated, ", ");
+//impl_to_css_for_separated_type!(OneOrMoreSpaceSeparated, " ");
 
 impl<T> ToCss for Box<T> where T: ?Sized + ToCss {
     fn to_css<W>(&self, dest: &mut W) -> fmt::Result

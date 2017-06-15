@@ -63,7 +63,7 @@ impl CSS {
 
     // https://drafts.css-houdini.org/css-properties-values-api/#dom-css-unregisterproperty
     pub fn UnregisterProperty(_: &Window, name: DOMString) -> Result<(), Error> {
-        println!("output: {:?}", Syntax::parse(&name));
+        println!("output: {:?}", Syntax::from_string(&name));
         // Implemented by a later patch in this series.
         Err(Error::NotSupported)
     }
